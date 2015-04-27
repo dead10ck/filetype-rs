@@ -33,11 +33,11 @@ pub fn file_type(f : &File) -> Result<FileType, Error> {
     let fd = f.as_raw_fd();
     let fstat = try!(fstat(fd));
     let file_mask = fstat.st_mode & posix88::S_IFMT;
-    get_file_type(&file_mask)
+    get_file_type(file_mask)
 }
 
-fn get_file_type(file_mask : &u16) -> Result<FileType, Error> {
-    match *file_mask {
+fn get_file_type(file_mask : u16) -> Result<FileType, Error> {
+    match file_mask {
         posix88::S_IFREG => Ok(FileType::Regular),
         posix88::S_IFDIR => Ok(FileType::Directory),
         posix88::S_IFLNK => Ok(FileType::Symlink),
