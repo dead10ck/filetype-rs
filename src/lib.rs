@@ -13,8 +13,8 @@ pub enum FileType {
     Directory,
     Symlink,
     NamedPipe,
-    Socket,
-    Device,
+    BlockDevice,
+    CharacterDevice,
 }
 
 pub enum Error {
@@ -40,6 +40,10 @@ fn get_file_type(file_mask : &u16) -> Result<FileType, Error> {
     match *file_mask {
         posix88::S_IFREG => Ok(FileType::Regular),
         posix88::S_IFDIR => Ok(FileType::Directory),
+        posix88::S_IFLNK => Ok(FileType::Symlink),
+        posix88::S_IFIFO => Ok(FileType::NamedPipe),
+        posix88::S_IFBLK => Ok(FileType::BlockDevice),
+        posix88::S_IFCHR => Ok(FileType::CharacterDevice),
         _ => Err(Error::UnknownFileType),
     }
 }
