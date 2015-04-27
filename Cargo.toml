@@ -1,0 +1,8 @@
+[package]
+name = "filetype"
+version = "0.1.0"
+authors = ["Skyler Hawthorne <skylerhawthorne@gmail.com>"]
+
+[dependencies]
+nix = "*"
+libc = "*"
