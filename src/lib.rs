@@ -7,7 +7,8 @@ use std::convert::From;
 use nix::sys::stat::fstat;
 use libc::consts::os::posix88;
 
-/// Every standard Unix file type.
+/// Every standard Unix file type (except for Sockets, since this
+/// is not provided by `libc::consts::os::posix88`)
 pub enum FileType {
     Regular,
     Directory,
@@ -17,9 +18,15 @@ pub enum FileType {
     CharacterDevice,
 }
 
+/// An error which occurred during file type determination.
+/// Either an error returned by `nix::sys::stat::fstat`, or
+/// the file type is uknown. If unknown, the file mask is
+/// returned; the file mask is the `st_mode` returned by
+/// `stat` bitwise-ANDed with `libc::consts::os::posix88::S_IFMT`.
+/// See the man pages for `fstat` for more information.
 pub enum Error {
     NixError(nix::Error),
-    UnknownFileType,
+    UnknownFileType(u16),
 }
 
 impl From<nix::Error> for Error {
@@ -44,6 +51,6 @@ fn get_file_type(file_mask : u16) -> Result<FileType, Error> {
         posix88::S_IFIFO => Ok(FileType::NamedPipe),
         posix88::S_IFBLK => Ok(FileType::BlockDevice),
         posix88::S_IFCHR => Ok(FileType::CharacterDevice),
-        _ => Err(Error::UnknownFileType),
+        _ => Err(Error::UnknownFileType(file_mask)),
     }
 }
