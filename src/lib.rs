@@ -4,6 +4,7 @@ extern crate nix;
 use std::fs::File;
 use std::os::unix::io::AsRawFd;
 use std::convert::From;
+use nix::sys::stat;
 use nix::sys::stat::fstat;
 use libc::consts::os::posix88;
 
@@ -26,7 +27,7 @@ pub enum FileType {
 /// See the man pages for `fstat` for more information.
 pub enum Error {
     NixError(nix::Error),
-    UnknownFileType(u16),
+    UnknownFileType(u32),
 }
 
 impl From<nix::Error> for Error {
@@ -38,12 +39,12 @@ impl From<nix::Error> for Error {
 /// Returns the file type of `f`.
 pub fn file_type(f : &File) -> Result<FileType, Error> {
     let fd = f.as_raw_fd();
-    let fstat = try!(fstat(fd));
+    let fstat = try!(stat::fstat(fd));
     let file_mask = fstat.st_mode & posix88::S_IFMT;
     get_file_type(file_mask)
 }
 
-fn get_file_type(file_mask : u16) -> Result<FileType, Error> {
+fn get_file_type(file_mask : u32) -> Result<FileType, Error> {
     match file_mask {
         posix88::S_IFREG => Ok(FileType::Regular),
         posix88::S_IFDIR => Ok(FileType::Directory),
