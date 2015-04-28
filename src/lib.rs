@@ -17,6 +17,7 @@ pub trait UnixFileType {
 
 /// Every standard Unix file type (except for Sockets, since this
 /// is not provided by `libc::consts::os::posix88`)
+#[derive(Debug, PartialEq, Eq)]
 pub enum FileType {
     Regular,
     Directory,
@@ -32,6 +33,7 @@ pub enum FileType {
 /// returned; the file mask is the `st_mode` returned by
 /// `stat` bitwise-ANDed with `libc::consts::os::posix88::S_IFMT`.
 /// See the man pages for `fstat` for more information.
+#[derive(Debug)]
 pub enum Error {
     NixError(nix::Error),
     UnknownFileType(u32),
@@ -64,3 +66,5 @@ fn get_file_type(file_mask : u32) -> FileTypeResult {
         _ => Err(Error::UnknownFileType(file_mask)),
     }
 }
+
+mod test;
