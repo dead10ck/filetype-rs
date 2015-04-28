@@ -8,6 +8,13 @@ use nix::sys::stat;
 use nix::sys::stat::fstat;
 use libc::consts::os::posix88;
 
+pub type FileTypeResult = Result<FileType, Error>;
+
+/// Can return a Unix file type.
+pub trait UnixFileType {
+    fn file_type(&self) -> FileTypeResult;
+}
+
 /// Every standard Unix file type (except for Sockets, since this
 /// is not provided by `libc::consts::os::posix88`)
 pub enum FileType {
@@ -37,14 +44,16 @@ impl From<nix::Error> for Error {
 }
 
 /// Returns the file type of `f`.
-pub fn file_type(f : &File) -> Result<FileType, Error> {
-    let fd = f.as_raw_fd();
-    let fstat = try!(stat::fstat(fd));
-    let file_mask = fstat.st_mode & posix88::S_IFMT;
-    get_file_type(file_mask)
+impl UnixFileType for File {
+    fn file_type(&self) -> FileTypeResult {
+        let fd = self.as_raw_fd();
+        let fstat = try!(stat::fstat(fd));
+        let file_mask = fstat.st_mode & posix88::S_IFMT;
+        get_file_type(file_mask)
+    }
 }
 
-fn get_file_type(file_mask : u32) -> Result<FileType, Error> {
+fn get_file_type(file_mask : u32) -> FileTypeResult {
     match file_mask {
         posix88::S_IFREG => Ok(FileType::Regular),
         posix88::S_IFDIR => Ok(FileType::Directory),
