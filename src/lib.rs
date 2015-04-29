@@ -1,3 +1,38 @@
+//! This crate provides a basic extension to `std::fs::File`: it defines a method
+//! which returns the file's type (on *nix systems).
+//!
+//! ```
+//! use std::fs;
+//! use std::fs::File;
+//! use filetype::{FileType, UnixFileType};
+//!
+//! # fn regular_file() {
+//! #   let f = File::create("foo").unwrap();
+//! let f = File::open("foo").unwrap();
+//! #   assert_eq!(f.file_type().unwrap(), FileType::Regular);
+//! let ftype = f.file_type().unwrap();
+//!
+//! match ftype {
+//!     FileType::Regular => {},
+//!     FileType::Directory => {
+//!         # assert!(false);
+//!     },
+//!     FileType::Symlink => {
+//!         # assert!(false);
+//!     },
+//!     FileType::NamedPipe => {
+//!         # assert!(false);
+//!     },
+//!     FileType::BlockDevice => {
+//!         # assert!(false);
+//!     },
+//!     FileType::CharacterDevice => {
+//!         # assert!(false);
+//!     },
+//! }
+//! #   assert!(fs::remove_file("foo").is_ok());
+//! # }
+
 extern crate libc;
 extern crate nix;
 
