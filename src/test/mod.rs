@@ -1,9 +1,13 @@
 #[cfg(test)] use super::FileType;
 #[cfg(test)] use super::UnixFileType;
+#[cfg(test)] use std::path::Path;
 #[cfg(test)] use std::fs;
-#[cfg(test)] use std::fs::File;
+#[cfg(test)] use std::fs::{File, OpenOptions};
+#[cfg(test)] use libc::consts::os::posix88;
 //#[cfg(test)] use std::os::unix::io::FromRawFd;
 //#[cfg(test)] use nix::unistd;
+#[cfg(test)] use nix::sys::stat;
+#[cfg(test)] use nix::sys::stat::{SFlag, Mode};
 
 #[test]
 fn regular_file() {
@@ -46,14 +50,32 @@ fn symlink() {
 }
 */
 
-/* File::from_raw_fd() is unstable, so until it is stabilized,
- * it's not possible to turn a unix pipe into a File.
 #[test]
 fn pipe() {
-    let (r, w) = unistd::pipe().unwrap();
-    let f = unsafe { File::from_raw_fd(r) };
+    let fname = "foopipe";
+    let file_flag = SFlag::from_bits(posix88::S_IFIFO).unwrap();
+    let perms = Mode::from_bits(0o666).unwrap();
+    let dev = 0;
+
+    // create a named pipe
+    if let Err(e) = stat::mknod(Path::new(fname), file_flag, perms, dev) {
+        println!("Error creating pipe: {:?}", e);
+    }
+
+    let f_result = OpenOptions::new().read(true).write(true).open(fname);
+
+    if let Err(ref e) = f_result {
+        println!("Error opening pipe: {}", e);
+        assert!(false);
+    }
+
+    let f = f_result.unwrap();
+
+    assert_eq!(f.file_type().unwrap(), FileType::NamedPipe);
+
+    // delete the block device
+    assert!(fs::remove_file(fname).is_ok());
 }
-*/
 
 #[test]
 fn block() {
