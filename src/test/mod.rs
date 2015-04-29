@@ -2,6 +2,8 @@
 #[cfg(test)] use super::UnixFileType;
 #[cfg(test)] use std::fs;
 #[cfg(test)] use std::fs::File;
+//#[cfg(test)] use std::os::unix::io::FromRawFd;
+//#[cfg(test)] use nix::unistd;
 
 #[test]
 fn regular_file() {
@@ -41,5 +43,14 @@ fn symlink() {
     if let Err(e) = fs::remove_file(fname) {
         println!("Error removing file: {}", e);
     }
+}
+*/
+
+/* File::from_raw_fd() is unstable, so until it is stabilized,
+ * it's not possible to turn a unix pipe into a File.
+#[test]
+fn pipe() {
+    let (r, w) = unistd::pipe().unwrap();
+    let f = unsafe { File::from_raw_fd(r) };
 }
 */
