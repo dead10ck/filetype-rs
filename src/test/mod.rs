@@ -54,3 +54,17 @@ fn pipe() {
     let f = unsafe { File::from_raw_fd(r) };
 }
 */
+
+#[test]
+fn block() {
+    let fname = "/dev/sda";
+    let f = File::open(fname).unwrap();
+    assert_eq!(f.file_type().unwrap(), FileType::BlockDevice);
+}
+
+#[test]
+fn character() {
+    let fname = "/dev/random";
+    let f = File::open(fname).unwrap();
+    assert_eq!(f.file_type().unwrap(), FileType::CharacterDevice);
+}
