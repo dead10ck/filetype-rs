@@ -86,7 +86,14 @@ fn pipe() {
 #[cfg(target_os = "linux")]
 fn block() {
     let fname = "/dev/sda";
-    let f = File::open(fname).unwrap();
+    let f = match File::open(fname) {
+        Ok(f) => f,
+        Err(ref e) => {
+            // skip the test if opening the block device fails
+            println!("error opening {}: {}", fname, e);
+            return;
+        }
+    };
     assert_eq!(f.file_type().unwrap(), FileType::BlockDevice);
 }
 
