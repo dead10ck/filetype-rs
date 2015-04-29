@@ -42,6 +42,7 @@ use std::convert::From;
 use nix::sys::stat;
 use nix::sys::stat::fstat;
 use libc::consts::os::posix88;
+use libc::types::os::arch::posix88::mode_t;
 
 pub type FileTypeResult = Result<FileType, Error>;
 
@@ -71,7 +72,7 @@ pub enum FileType {
 #[derive(Debug)]
 pub enum Error {
     NixError(nix::Error),
-    UnknownFileType(u32),
+    UnknownFileType(mode_t),
 }
 
 impl From<nix::Error> for Error {
@@ -85,12 +86,12 @@ impl UnixFileType for File {
     fn file_type(&self) -> FileTypeResult {
         let fd = self.as_raw_fd();
         let fstat = try!(stat::fstat(fd));
-        let file_mask = fstat.st_mode & posix88::S_IFMT;
+        let file_mask : mode_t = fstat.st_mode & posix88::S_IFMT;
         get_file_type(file_mask)
     }
 }
 
-fn get_file_type(file_mask : u32) -> FileTypeResult {
+fn get_file_type(file_mask : mode_t) -> FileTypeResult {
     match file_mask {
         posix88::S_IFREG => Ok(FileType::Regular),
         posix88::S_IFDIR => Ok(FileType::Directory),
