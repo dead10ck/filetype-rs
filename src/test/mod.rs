@@ -78,6 +78,12 @@ fn pipe() {
 }
 
 #[test]
+// there doesn't appear to be an equivalent block device on MacOS that is
+// user-accessible. There is /dev/disk*, but these require root privileges.
+// Additionally, mknod also requires root privileges to create block devices.
+// Consequently, there doesn't appear to be a way to test block devices on
+// MacOS without root privileges.
+#[cfg(target_os = "linux")]
 fn block() {
     let fname = "/dev/sda";
     let f = File::open(fname).unwrap();
