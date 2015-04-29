@@ -6,6 +6,7 @@ description = """
 This crate provides a basic extension to `std::fs::File`: it defines a method \
 which returns the file's type (on *nix systems)."""
 repository = "https://github.com/dead10ck/filetype-rs"
+documentation = "http://dead10ck.github.io/filetype-rs/filetype/"
 readme = "README.md"
 keywords = [ "filetype", "file" ]
 license = "MIT"
