@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/dead10ck/filetype-rs.svg)](https://travis-ci.org/dead10ck/filetype-rs)
+
 [API Documentation](http://dead10ck.github.io/filetype-rs/filetype/)
 
 **This is a pet project, and not tested very well (contributions welcome!).
