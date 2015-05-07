@@ -1,13 +1,13 @@
-#[cfg(test)] use super::FileType;
-#[cfg(test)] use super::UnixFileType;
-#[cfg(test)] use std::path::Path;
-#[cfg(test)] use std::fs;
-#[cfg(test)] use std::fs::{File, OpenOptions};
-#[cfg(test)] use libc::consts::os::posix88;
-//#[cfg(test)] use std::os::unix::io::FromRawFd;
-//#[cfg(test)] use nix::unistd;
-#[cfg(test)] use nix::sys::stat;
-#[cfg(test)] use nix::sys::stat::{SFlag, Mode};
+use super::FileType;
+use super::UnixFileType;
+use std::path::Path;
+use std::fs;
+use std::fs::{File, OpenOptions};
+use libc::consts::os::posix88;
+// use std::os::unix::io::FromRawFd;
+// use nix::unistd;
+use nix::sys::stat;
+use nix::sys::stat::{SFlag, Mode};
 
 #[test]
 fn regular_file() {

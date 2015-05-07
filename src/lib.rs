@@ -103,4 +103,4 @@ fn get_file_type(file_mask : mode_t) -> FileTypeResult {
     }
 }
 
-mod test;
+#[cfg(test)] mod test;
