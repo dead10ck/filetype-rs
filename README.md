@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/dead10ck/filetype-rs.svg)](https://travis-ci.org/dead10ck/filetype-rs)
+[![Build Status](https://travis-ci.org/dead10ck/filetype-rs.svg?branch=master)](https://travis-ci.org/dead10ck/filetype-rs)
 
 [API Documentation](http://dead10ck.github.io/filetype-rs/filetype/)
 
