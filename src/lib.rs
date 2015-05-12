@@ -102,5 +102,3 @@ fn get_file_type(file_mask : mode_t) -> FileTypeResult {
         _ => Err(Error::UnknownFileType(file_mask)),
     }
 }
-
-#[cfg(test)] mod test;

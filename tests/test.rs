@@ -1,5 +1,9 @@
-use super::FileType;
-use super::UnixFileType;
+extern crate libc;
+extern crate nix;
+extern crate filetype;
+
+use filetype::FileType;
+use filetype::UnixFileType;
 use std::path::Path;
 use std::fs;
 use std::fs::{File, OpenOptions};
