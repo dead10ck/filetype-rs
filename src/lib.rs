@@ -37,10 +37,11 @@ extern crate libc;
 extern crate nix;
 
 use std::fs::File;
+use std::path::Path;
 use std::os::unix::io::AsRawFd;
 use std::convert::From;
 use nix::sys::stat;
-use nix::sys::stat::fstat;
+use nix::sys::stat::{FileStat, fstat, lstat};
 use libc::consts::os::posix88;
 use libc::types::os::arch::posix88::mode_t;
 
@@ -81,17 +82,25 @@ impl From<nix::Error> for Error {
     }
 }
 
-/// Returns the file type of `f`.
+/// Returns the file type of the given file.
 impl UnixFileType for File {
     fn file_type(&self) -> FileTypeResult {
         let fd = self.as_raw_fd();
         let fstat = try!(stat::fstat(fd));
-        let file_mask : mode_t = fstat.st_mode & posix88::S_IFMT;
-        get_file_type(file_mask)
+        get_file_type(fstat)
     }
 }
 
-fn get_file_type(file_mask : mode_t) -> FileTypeResult {
+/// Returns the file type of the given path.
+impl UnixFileType for Path {
+    fn file_type(&self) -> FileTypeResult {
+        let lstat = try!(stat::lstat(self));
+        get_file_type(lstat)
+    }
+}
+
+fn get_file_type(stat : FileStat) -> FileTypeResult {
+    let file_mask = stat.st_mode & posix88::S_IFMT;
     match file_mask {
         posix88::S_IFREG => Ok(FileType::Regular),
         posix88::S_IFDIR => Ok(FileType::Directory),

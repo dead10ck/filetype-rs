@@ -12,5 +12,7 @@ keywords = [ "filetype", "file" ]
 license = "MIT"
 
 [dependencies]
-nix = "*"
 libc = "*"
+
+[dependencies.nix]
+git = "https://github.com/carllerche/nix-rust"

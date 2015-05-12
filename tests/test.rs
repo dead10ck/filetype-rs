@@ -14,7 +14,7 @@ use nix::sys::stat;
 use nix::sys::stat::{SFlag, Mode};
 
 #[test]
-fn regular_file() {
+fn regular_file_file() {
     let fname = "foo";
     let f = File::create(fname).unwrap();
     assert_eq!(f.file_type().unwrap(), FileType::Regular);
@@ -22,12 +22,28 @@ fn regular_file() {
 }
 
 #[test]
-fn diretory() {
+fn regular_file_path() {
+    let path = Path::new("foopath");
+    let _ = File::create(path).unwrap();
+    assert_eq!(path.file_type().unwrap(), FileType::Regular);
+    assert!(fs::remove_file(path).is_ok());
+}
+
+#[test]
+fn diretory_file() {
     let dirname = "testdir";
     assert!(fs::create_dir(dirname).is_ok());
     let f = File::open(dirname).unwrap();
     assert_eq!(f.file_type().unwrap(), FileType::Directory);
     assert!(fs::remove_dir(dirname).is_ok());
+}
+
+#[test]
+fn diretory_path() {
+    let dir_path = Path::new("testdirpath");
+    assert!(fs::create_dir(dir_path).is_ok());
+    assert_eq!(dir_path.file_type().unwrap(), FileType::Directory);
+    assert!(fs::remove_dir(dir_path).is_ok());
 }
 
 /* There doesn't appear to be a way to open a file without the underlying
@@ -53,6 +69,22 @@ fn symlink() {
     }
 }
 */
+
+#[test]
+fn symlink_path() {
+    let fname = "symbase";
+    let link_path = Path::new("symlink");
+    let _ = File::create(fname).unwrap();
+
+    // make the link
+    assert!(fs::soft_link(fname, link_path).is_ok());
+    assert!(File::open(link_path).is_ok());
+
+    // test its type
+    assert_eq!(link_path.file_type().unwrap(), FileType::Symlink);
+    assert!(fs::remove_file(link_path).is_ok());
+    assert!(fs::remove_file(fname).is_ok());
+}
 
 #[test]
 fn pipe() {
